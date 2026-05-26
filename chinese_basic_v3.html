@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파란하늘 중국어 — 직장인 기초 비즈니스 중국어</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#C0392B;--red-d:#8B1A10;--red-l:#FDF0EF;
+  --gold:#C9A84C;--gold-l:#FBF5E3;
+  --ink:#1A1208;--ink2:#4A4030;
+  --paper:#FAF7F2;--paper2:#F2EDE4;
+  --gray:#8A8070;--border:#DDD5C8;
+  --green:#27AE60;--green-l:#EBF8F1;
+  --blue:#2471A3;--blue-l:#EBF5FB;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--paper);color:var(--ink);height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── 헤더 ── */
+.header{background:var(--red);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.logo{display:flex;align-items:baseline;gap:8px;}
+.logo-ko{font-family:'Noto Serif KR',serif;font-size:21px;color:#fff;letter-spacing:1px;}
+.logo-en{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.5px;}
+.level-pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:11px;padding:4px 12px;border-radius:20px;}
+
+/* ── 시나리오 선택 ── */
+#screen-select{flex:1;overflow-y:auto;padding:24px 20px 40px;}
+.sel-title{font-size:19px;font-weight:600;margin-bottom:6px;}
+.sel-sub{font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:24px;}
+
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:28px;}
+.sc-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .18s;position:relative;}
+.sc-card:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(192,57,43,.1);transform:translateY(-2px);}
+.sc-card.picked{border-color:var(--red);background:var(--red-l);}
+.sc-card.picked::after{content:'✓';position:absolute;top:10px;right:12px;color:var(--red);font-weight:700;font-size:14px;}
+.sc-emoji{font-size:28px;margin-bottom:10px;display:block;}
+.sc-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;line-height:1.4;}
+.sc-desc{font-size:11px;color:var(--gray);line-height:1.5;}
+
+.tip-box{background:var(--gold-l);border:1px solid #E8D9A0;border-radius:12px;padding:16px 18px;margin-bottom:24px;}
+.tip-box p{font-size:13px;color:var(--ink2);line-height:1.8;}
+.tip-box strong{color:var(--red);}
+
+.go-btn{width:100%;background:var(--red);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s;}
+.go-btn:hover{background:var(--red-d);}
+.go-btn:disabled{background:#C0B8B0;cursor:not-allowed;}
+
+/* ── 대화 화면 ── */
+#screen-chat{display:none;flex-direction:column;flex:1;overflow:hidden;}
+#screen-chat.on{display:flex;}
+
+.chat-bar{background:#fff;border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.back-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--red);padding:3px 8px;border-radius:6px;}
+.back-btn:hover{background:var(--red-l);}
+.ch-avatar{width:38px;height:38px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.ch-info{flex:1;min-width:0;}
+.ch-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ch-status{font-size:11px;color:var(--green);}
+.recap-btn{flex-shrink:0;background:none;border:1.5px solid var(--gold);color:var(--gold);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;}
+.recap-btn:hover{background:var(--gold);color:#fff;}
+
+/* ── 메시지 ── */
+.msgs{flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:14px;}
+
+.row{display:flex;flex-direction:column;}
+.row.me{align-items:flex-end;}
+.row.ai{align-items:flex-start;}
+.row.sys{align-items:center;}
+
+.bubble{max-width:82%;padding:11px 15px;border-radius:16px;font-size:14px;line-height:1.8;}
+.bubble.ai{background:#fff;border:1px solid var(--border);border-radius:4px 16px 16px 16px;}
+.bubble.me{background:var(--red);color:#fff;border-radius:16px 16px 4px 16px;}
+.bubble.sys{background:var(--paper2);border-radius:10px;font-size:12px;color:var(--gray);max-width:100%;text-align:center;padding:8px 16px;}
+.bubble.typing{background:#fff;border:1px solid var(--border);border-radius:4px 16px 16px 16px;padding:13px 18px;}
+
+/* 표현 카드 (AI 메시지 안에 삽입) */
+.expr{background:var(--gold-l);border:1px solid #E8D9A0;border-radius:10px;padding:13px 15px;margin-top:10px;}
+.expr-hanzi{font-family:'Noto Serif KR',serif;font-size:22px;color:var(--red);letter-spacing:3px;margin-bottom:5px;}
+.expr-pinyin{font-size:12px;color:var(--gray);margin-bottom:3px;letter-spacing:.5px;}
+.expr-kr{font-size:13px;font-weight:600;color:var(--ink2);}
+
+/* 피드백 카드 */
+.fb{border-radius:10px;padding:11px 14px;margin-top:8px;font-size:13px;line-height:1.7;}
+.fb.good{background:var(--green-l);border:1px solid #A8DDB8;color:#1a5e35;}
+.fb.fix{background:var(--blue-l);border:1px solid #A9CCE3;color:#1a4a7a;}
+.fb-label{font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:5px;}
+
+/* ── 입력 영역 ── */
+.input-zone{border-top:1px solid var(--border);padding:12px 14px;background:#fff;flex-shrink:0;}
+.quick-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.qbtn{padding:6px 13px;background:var(--paper2);border:1px solid var(--border);border-radius:16px;font-size:12px;cursor:pointer;color:var(--ink2);transition:all .15s;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;}
+.qbtn:hover{border-color:var(--red);background:var(--red-l);color:var(--red-d);}
+.send-row{display:flex;gap:10px;align-items:flex-end;}
+.txt-input{flex:1;border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;font-size:14px;font-family:'Noto Sans KR',sans-serif;resize:none;outline:none;min-height:44px;max-height:110px;background:var(--paper);line-height:1.5;transition:border-color .15s;}
+.txt-input:focus{border-color:var(--red);background:#fff;}
+.snd-btn{background:var(--red);color:#fff;border:none;border-radius:12px;width:44px;height:44px;font-size:22px;cursor:pointer;flex-shrink:0;transition:background .15s;display:flex;align-items:center;justify-content:center;line-height:1;}
+.snd-btn:hover{background:var(--red-d);}
+.snd-btn:disabled{background:#C0B8B0;cursor:not-allowed;}
+
+/* ── 요약 모달 ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.overlay.on{display:flex;}
+.modal{background:#fff;border-radius:18px;max-width:480px;width:100%;max-height:82vh;overflow-y:auto;}
+.modal-head{background:var(--red);border-radius:18px 18px 0 0;padding:20px 22px;color:#fff;display:flex;justify-content:space-between;align-items:flex-start;}
+.modal-ttl{font-size:17px;font-weight:600;margin-bottom:3px;}
+.modal-stl{font-size:12px;opacity:.7;}
+.modal-x{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:16px;}
+.modal-body{padding:22px;font-size:14px;line-height:1.9;color:var(--ink);white-space:pre-wrap;}
+
+/* 로딩 점 */
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gray);margin:0 2px;animation:blink 1.2s infinite;}
+.dot:nth-child(2){animation-delay:.22s;}
+.dot:nth-child(3){animation-delay:.44s;}
+
+@media(max-width:520px){
+  .sc-grid{grid-template-columns:1fr 1fr;}
+  .bubble{max-width:90%;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <span class="logo-ko">파란하늘 중국어</span>
+    <span class="logo-en">직장인 기초 비즈니스 중국어</span>
+  </div>
+  <span class="level-pill">🌱 기초 맞춤</span>
+</div>
+<!-- ── API 키 입력 화면 ── -->
+<div id="screen-key" style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:#fff;border:1px solid #DDD5C8;border-radius:16px;padding:32px 28px;max-width:440px;width:100%;">
+    <div style="font-family:'Noto Serif KR',serif;font-size:24px;color:#C0392B;margin-bottom:8px;">파란하늘 中</div>
+    <div style="font-size:17px;font-weight:600;color:#1A1208;margin-bottom:8px;">API 키를 입력해주세요</div>
+    <div style="font-size:13px;color:#8A8070;line-height:1.8;margin-bottom:20px;">
+      이 앱은 AI와 직접 대화하는 방식이라<br>Anthropic API 키가 필요합니다.<br>
+      키는 이 기기에만 저장되고 외부로 전송되지 않아요. 🔒
+    </div>
+    <input id="key-input" type="password" placeholder="sk-ant-api03-..."
+      style="width:100%;border:1.5px solid #DDD5C8;border-radius:10px;padding:12px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;background:#FAF7F2;margin-bottom:8px;"
+      onkeydown="if(event.key==='Enter') saveKey()"
+      onfocus="this.style.borderColor='#C0392B';this.style.background='#fff'"
+      onblur="this.style.borderColor='#DDD5C8'"/>
+    <div id="key-err" style="font-size:12px;color:#C0392B;margin-bottom:8px;display:none;">
+      올바른 키 형식이 아닙니다. sk-ant-로 시작하는 키를 입력해주세요.
+    </div>
+    <button onclick="saveKey()"
+      style="width:100%;background:#C0392B;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-bottom:16px;">
+      시작하기 →
+    </button>
+    <div style="background:#FBF5E3;border:1px solid #E8D9A0;border-radius:10px;padding:14px 16px;">
+      <p style="font-size:12px;color:#4A4030;line-height:1.9;">
+        🔑 <strong>API 키 발급 방법</strong><br>
+        <a href="https://console.anthropic.com" target="_blank" style="color:#C0392B;font-weight:500;">console.anthropic.com</a>
+        → 왼쪽 메뉴 API Keys → Create Key<br><br>
+        💳 <strong>비용</strong>: 혼자 매일 사용 시 월 100~300원 수준<br>
+        첫 가입 시 $5 무료 크레딧 제공
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── 시나리오 선택 ── -->
+<div id="screen-select" style="display:none;">
+  <p class="sel-title">어떤 상황을 연습할까요?</p>
+  <p class="sel-sub">고르시면 AI가 그 상황의 중국인 파트너가 됩니다.<br>한국어로 말해도 괜찮아요. 중국어 표현을 바로 알려드립니다. 😊</p>
+
+  <div class="sc-grid">
+    <div class="sc-card" onclick="pick(this,'첫 만남 & 명함 교환','중국 바이어 리 부장과 처음 만나 명함을 교환하고 자기소개를 나누는 상황입니다.','🤝')">
+      <span class="sc-emoji">🤝</span>
+      <div class="sc-name">첫 만남·명함 교환</div>
+      <div class="sc-desc">인사, 자기소개, 명함</div>
+    </div>
+    <div class="sc-card" onclick="pick(this,'식사 접대 & 건배','중국 거래처와 저녁 식사 자리. 메뉴 주문, 건배, 가벼운 담소를 나누는 상황입니다.','🥢')">
+      <span class="sc-emoji">🥢</span>
+      <div class="sc-name">식사 접대·건배</div>
+      <div class="sc-desc">주문, 건배, 접대</div>
+    </div>
+    <div class="sc-card" onclick="pick(this,'제품 발표 & 미팅','회의실에서 제품을 소개하고 바이어의 간단한 질문에 답하는 비즈니스 미팅 상황입니다.','📊')">
+      <span class="sc-emoji">📊</span>
+      <div class="sc-name">제품 발표·미팅</div>
+      <div class="sc-desc">제품 소개, 질의응답</div>
+    </div>
+    <div class="sc-card" onclick="pick(this,'가격 & 조건 협상','납품 단가와 결제 조건을 협의하는 상황. 가격 조율의 기본 표현을 연습합니다.','💬')">
+      <span class="sc-emoji">💬</span>
+      <div class="sc-name">가격·조건 협상</div>
+      <div class="sc-desc">가격, 결제, 조건</div>
+    </div>
+    <div class="sc-card" onclick="pick(this,'출장 중 일상 대화','베이징 출장에서 공항·호텔·택시 등 실생활 상황. 길 묻기, 체크인, 주문 등입니다.','✈️')">
+      <span class="sc-emoji">✈️</span>
+      <div class="sc-name">출장 중 일상</div>
+      <div class="sc-desc">이동, 숙박, 주문</div>
+    </div>
+    <div class="sc-card" onclick="pick(this,'클레임 & 문제 해결','납기 지연이나 품질 문제를 정중하게 제기하고 해결책을 요청하는 상황입니다.','⚠️')">
+      <span class="sc-emoji">⚠️</span>
+      <div class="sc-name">클레임·문제 해결</div>
+      <div class="sc-desc">납기, 품질, 사과</div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <p>💡 <strong>기초 수준에 최적화</strong>되어 있어요.<br>
+    · 한국어로 말하면 → 중국어 표현을 <strong>한 번에 하나씩</strong> 알려드립니다<br>
+    · 중국어로 따라 말하면 → 잘한 점과 더 나은 표현을 바로 피드백해드립니다<br>
+    · 막히면 아래 버튼(💡힌트 / 📝표현)을 눌러보세요</p>
+  </div>
+
+  <button class="go-btn" id="go-btn" disabled onclick="startChat()">시나리오를 먼저 골라주세요</button>
+</div>
+
+<!-- ── 대화 화면 ── -->
+<div id="screen-chat">
+  <div class="chat-bar">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div class="ch-avatar" id="ch-avatar">🤝</div>
+    <div class="ch-info">
+      <div class="ch-name" id="ch-name">시나리오</div>
+      <div class="ch-status">● 대화 중</div>
+    </div>
+    <button class="recap-btn" onclick="openRecap()">📋 오늘 정리</button>
+  </div>
+
+  <div class="msgs" id="msgs"></div>
+
+  <div class="input-zone">
+    <div class="quick-row">
+      <button class="qbtn" onclick="quickCmd('hint')">💡 힌트</button>
+      <button class="qbtn" onclick="quickCmd('expr')">📝 표현 알려줘</button>
+      <button class="qbtn" onclick="quickCmd('again')">🔁 다시 설명해줘</button>
+      <button class="qbtn" onclick="quickCmd('next')">⏭ 다음 상황으로</button>
+    </div>
+    <div class="send-row">
+      <textarea class="txt-input" id="txt"
+        placeholder="한국어 또는 중국어로 입력 (Enter = 전송 / Shift+Enter = 줄바꿈)"
+        rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"
+        oninput="grow(this)"></textarea>
+      <button class="snd-btn" id="snd-btn" onclick="send()">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 요약 모달 ── -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-ttl">📋 오늘 대화 정리</div>
+        <div class="modal-stl">학습한 표현과 피드백 요약</div>
+      </div>
+      <button class="modal-x" onclick="closeRecap()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">요약 생성 중...</div>
+  </div>
+</div>
+
+<script>
+
+// ── API 키 저장 ──
+function saveKey() {
+  const input = document.getElementById('key-input');
+  const key = input.value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    document.getElementById('key-err').style.display = 'block';
+    return;
+  }
+  document.getElementById('key-err').style.display = 'none';
+  API_KEY = key;
+  localStorage.setItem('paran_api_key', key);
+  document.getElementById('screen-key').style.display = 'none';
+  document.getElementById('screen-select').style.display = 'block';
+}
+
+// 저장된 키 확인
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('paran_api_key');
+  if (saved) {
+    API_KEY = saved;
+    document.getElementById('screen-key').style.display = 'none';
+    document.getElementById('screen-select').style.display = 'block';
+  }
+});
+
+const API = 'https://api.anthropic.com/v1/messages';
+const MODEL = 'claude-sonnet-4-20250514';
+let API_KEY = '';
+
+let scenario = null;
+let history = [];
+let busy = false;
+let turnCount = 0;
+
+// ── 시나리오 선택 ──
+function pick(card, name, ctx, emoji) {
+  document.querySelectorAll('.sc-card').forEach(c => c.classList.remove('picked'));
+  card.classList.add('picked');
+  scenario = { name, ctx, emoji };
+  const btn = document.getElementById('go-btn');
+  btn.disabled = false;
+  btn.textContent = `"${name}" 시작하기 →`;
+}
+
+// ── 대화 시작 ──
+function startChat() {
+  if (!scenario) return;
+  document.getElementById('screen-select').style.display = 'none';
+  const cs = document.getElementById('screen-chat');
+  cs.style.display = 'flex'; cs.classList.add('on');
+  document.getElementById('ch-avatar').textContent = scenario.emoji;
+  document.getElementById('ch-name').textContent = scenario.name;
+  document.getElementById('msgs').innerHTML = '';
+  history = []; turnCount = 0;
+  sysmsg('🎬 롤플레이 시작! 한국어 또는 중국어로 자유롭게 말해보세요');
+  loadOpening();
+}
+
+async function loadOpening() {
+  typing();
+  try {
+    const reply = await ask([{role:'user', content:'[START]'}]);
+    untype(); aiMsg(reply);
+    history.push({role:'user',content:'[START]'});
+    history.push({role:'assistant',content:reply});
+  } catch { untype(); sysmsg('연결에 실패했습니다. 다시 시도해주세요.'); }
+}
+
+// ── 메시지 전송 ──
+async function send() {
+  if (busy) return;
+  const el = document.getElementById('txt');
+  const text = el.value.trim();
+  if (!text) return;
+  el.value = ''; grow(el);
+  busy = true; document.getElementById('snd-btn').disabled = true;
+  userMsg(text);
+  history.push({role:'user', content:text});
+  turnCount++;
+  typing();
+  try {
+    const reply = await ask(history);
+    untype(); aiMsg(reply);
+    history.push({role:'assistant', content:reply});
+    if (turnCount > 0 && turnCount % 5 === 0) {
+      setTimeout(()=>sysmsg('💡 "📋 오늘 정리" 버튼으로 지금까지 배운 표현을 확인해보세요!'), 600);
+    }
+  } catch { untype(); sysmsg('오류가 발생했습니다. 다시 시도해주세요.'); }
+  busy = false; document.getElementById('snd-btn').disabled = false;
+  document.getElementById('txt').focus();
+}
+
+// ── 빠른 버튼 ──
+async function quickCmd(type) {
+  if (busy) return;
+  const cmds = {
+    hint: '[요청] 지금 제가 뭐라고 말하면 좋을지 힌트를 한 가지만 주세요.',
+    expr: '[요청] 이 상황에서 기초 수준에 딱 맞는 표현 1개만 한자+병음+한국어로 알려주세요.',
+    again: '[요청] 방금 설명을 더 쉽게 다시 설명해주세요.',
+    next: '[요청] 이 시나리오의 다음 장면으로 넘어가 주세요.'
+  };
+  const text = cmds[type];
+  busy = true; document.getElementById('snd-btn').disabled = true;
+  sysmsg({hint:'💡 힌트 요청',expr:'📝 표현 요청',again:'🔁 재설명 요청',next:'⏭ 다음 장면으로'}[type]);
+  typing();
+  const msgs = [...history, {role:'user', content:text}];
+  try {
+    const reply = await ask(msgs);
+    untype(); aiMsg(reply);
+    history.push({role:'user',content:text});
+    history.push({role:'assistant',content:reply});
+  } catch { untype(); sysmsg('오류가 발생했습니다.'); }
+  busy = false; document.getElementById('snd-btn').disabled = false;
+}
+
+// ── 요약 ──
+async function openRecap() {
+  document.getElementById('overlay').classList.add('on');
+  document.getElementById('modal-body').textContent = '요약 생성 중...';
+  const prompt = `지금까지 나눈 대화를 기초 학습자 눈높이에서 정리해주세요.
+
+다음 형식으로 작성해주세요:
+
+오늘 연습한 상황
+(한 줄 요약)
+
+잘 하신 점 ✅
+(구체적으로 1~2가지, 격려 위주)
+
+오늘 배운 핵심 표현
+(최대 5개, 각 표현: 한자 / 병음 / 뜻 / 이럴 때 쓰세요)
+
+다음에 도전해볼 표현
+(1~2개, 조금 더 어려운 것)
+
+한 줄 응원 메시지
+(따뜻하게)
+
+짧고 명확하게 써주세요.`;
+  const msgs = [...history, {role:'user', content:prompt}];
+  try {
+    const reply = await ask(msgs, 1000);
+    document.getElementById('modal-body').textContent = reply;
+  } catch {
+    document.getElementById('modal-body').textContent = '요약 생성에 실패했습니다. 다시 시도해주세요.';
+  }
+}
+function closeRecap() { document.getElementById('overlay').classList.remove('on'); }
+
+function goBack() {
+  document.getElementById('screen-chat').style.display = 'none';
+  document.getElementById('screen-chat').classList.remove('on');
+  document.getElementById('screen-select').style.display = 'block';
+}
+
+// ── API ──
+async function ask(messages, maxTok=700) {
+  const res = await fetch(API, {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true',
+      'x-api-key': API_KEY
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: maxTok,
+      system: buildSystem(),
+      messages
+    })
+  });
+  if(!res.ok) throw new Error('API error');
+  const d = await res.json();
+  return d.content[0].text;
+}
+
+function buildSystem() {
+  return `당신은 한국 직장인(기초 중국어 수준, 니하오 정도만 앎)의 비즈니스 중국어 대화 코치입니다.
+
+현재 롤플레이 상황: ${scenario?.ctx || ''}
+
+사용자 수준: 🌱 기초 — 중국어를 거의 모릅니다. 최대한 쉽고 친절하게 이끌어주세요.
+
+대화 규칙 (반드시 지켜주세요):
+
+1. 역할극 시작 시:
+   - 중국인 파트너로서 간단한 중국어 인사를 먼저 건네세요
+   - 바로 아래에 "📌 오늘의 첫 표현"으로 한자+병음+한국어 뜻을 보여주세요
+   - "이렇게 따라 말해보세요! 😊" 라고 안내하세요
+
+2. 사용자가 한국어로 말할 때:
+   - "이 상황에서는 이렇게 말해요! 👇" 라고 하고
+   - 표현 1개만: 한자 + 병음(소괄호) + 한국어 뜻
+   - 예: 你好！(Nǐ hǎo!) — 안녕하세요!
+   - 그 표현으로 대화를 자연스럽게 이어가세요
+
+3. 사용자가 중국어로 말할 때:
+   - 먼저 역할극으로 응답하세요 (짧게)
+   - 그다음 💬 피드백: 잘한 점 / 더 자연스러운 표현이 있으면 알려주세요
+   - 교정 시 "이렇게 말하면 더 자연스러워요:" 식으로 부드럽게
+
+4. 항상 지킬 것:
+   - 표현은 한 번에 1개만 (초보자는 여러 개 받으면 혼란)
+   - 문법 설명 없이 상황+표현+예문으로만
+   - 틀려도 "잘하셨어요!" 격려 먼저
+   - 응답은 4~6줄 이내로 간결하게
+   - 마지막에 "따라해보세요! 😊" 또는 짧은 질문으로 참여 유도`;
+}
+
+// ── UI 헬퍼 ──
+let tid = 0;
+
+function aiMsg(text) {
+  const m = document.getElementById('msgs');
+  const row = document.createElement('div');
+  row.className = 'row ai';
+  const bub = document.createElement('div');
+  bub.className = 'bubble ai';
+  bub.innerHTML = fmt(text);
+  row.appendChild(bub);
+  m.appendChild(row);
+  m.scrollTop = m.scrollHeight;
+}
+
+function userMsg(text) {
+  const m = document.getElementById('msgs');
+  const row = document.createElement('div');
+  row.className = 'row me';
+  const bub = document.createElement('div');
+  bub.className = 'bubble me';
+  bub.innerHTML = esc(text).replace(/\n/g,'<br>');
+  row.appendChild(bub);
+  m.appendChild(row);
+  m.scrollTop = m.scrollHeight;
+}
+
+function sysmsg(text) {
+  const m = document.getElementById('msgs');
+  const row = document.createElement('div');
+  row.className = 'row sys';
+  const bub = document.createElement('div');
+  bub.className = 'bubble sys';
+  bub.textContent = text;
+  row.appendChild(bub);
+  m.appendChild(row);
+  m.scrollTop = m.scrollHeight;
+}
+
+function typing() {
+  const m = document.getElementById('msgs');
+  const row = document.createElement('div');
+  row.className = 'row ai'; row.id = 'trow';
+  row.innerHTML = `<div class="bubble typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+  m.appendChild(row);
+  m.scrollTop = m.scrollHeight;
+}
+function untype() { const e=document.getElementById('trow'); if(e) e.remove(); }
+
+function fmt(text) {
+  return esc(text)
+    .replace(/\n/g,'<br>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+}
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function grow(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,110)+'px'; }
+</script>
+</body>
+</html>
